@@ -1,57 +1,45 @@
-import { useState,  useEffect} from 'react';
+import React, { useEffect, useState} from 'react';
+import './components/style.css';
 
-function App () {
-  const [input, setInput] = useState ('');
-  const [tarefas, setTarefas] = useState([
-    'Pagar contas',
-    'Estudar JS',
-  ]);
+// https://sujeitoprogramador.com/rn-api/?api=posts
+
+function App() {
+  const [nutri, setNutri] = useState([]);
 
   useEffect(()=> {
-    const tarefasStorage = localStorage.getItem('@tarefa');
-    if(tarefasStorage) {
-      setTarefas(JSON.parse(tarefasStorage))
+    function loadApi () {
+      let url = 'https://sujeitoprogramador.com/rn-api/?api=posts';
+
+      fetch(url)
+      .then((r) => r.json())
+      .then ((json)=>{
+        console.log(json);
+        setNutri(json);
+      });
+
     }
-
+    loadApi();
   }, []);
-  
-  useEffect(() => {
-    localStorage.setItem('@tarefa', JSON.stringify(tarefas))
-  }, [tarefas]);
-
-  function handleRegister(e) {
-    e.preventDefault();
-
-    setTarefas([...tarefas, input]);
-    setInput('');
-  }
-
   return (
-    <div>
-      <h1>Lista de Tarefas</h1>
-      <form onSubmit={handleRegister}>
-        <label>Nome: </label><br/>
-        <input 
-        placeholder="Digite seu nome"
-        value={input} // valor dentro do input (já do html)
-        onChange={(e) => setInput(e.target.value)} //ele chama essa função toda vez que digitar qualquer letra. chama a funcao p/ pegar o que digitou  e coloca dnetro do useState
-        
-        /><br/>
-
-      
-        <button type='submit'>Registrar</button>
-      </form>
-      <br></br>
-      <ul>
-        {tarefas.map(tarefa => (
-          <li key={tarefa}>{tarefa}</li>
-        ))}
-  
-      </ul>
-    
-    
+    <div className="container">
+      <header>
+        <strong>React Nutri</strong>
+      </header>
+      {nutri.map((item) => {
+        return (
+          <article key={item.id} className="post">
+           <strong className="titulo">{item.titulo}</strong>
+           <img src={item.capa} alt={item.titulo} className="capa"/>
+           <p className="subtitulo">
+            {item.subtitulo}
+           </p>
+           <a className="botao">Acessar</a>
+          
+          </article>
+        )
+      })}
     </div>
-  )
+  );
 }
 
-export default App;
+export default App; 
